@@ -1,0 +1,200 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "Mindfulnity" [ref=e5] [cursor=pointer]:
+          - /url: "#top"
+        - generic [ref=e11]:
+          - link "Fitur" [ref=e12] [cursor=pointer]:
+            - /url: "#fitur"
+          - link "Skenario" [ref=e13] [cursor=pointer]:
+            - /url: "#skenario"
+          - link "Cara Kerja" [ref=e14] [cursor=pointer]:
+            - /url: "#cara-kerja"
+          - link "Testimoni" [ref=e15] [cursor=pointer]:
+            - /url: "#testimoni"
+          - link "FAQ" [ref=e16] [cursor=pointer]:
+            - /url: "#faq"
+        - generic [ref=e17]:
+          - button "Switch to English" [ref=e18]: EN
+          - link "Mulai" [ref=e19] [cursor=pointer]:
+            - /url: /app
+    - main [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Tersimpan di browser ini
+          - heading "Tenang dimulai dari satu napas." [level=1] [ref=e27]
+          - paragraph [ref=e28]: Meditasi terpandu, suara relaksasi, dan mood tracker — semuanya tersimpan di browser kamu.
+          - generic [ref=e29]:
+            - link "Mulai" [ref=e30] [cursor=pointer]:
+              - /url: /app
+            - link "Lihat cara kerja" [ref=e31] [cursor=pointer]:
+              - /url: "#cara-kerja"
+        - img "Ilustrasi lingkaran pernapasan" [ref=e33]
+      - generic [ref=e38]:
+        - generic [ref=e40]:
+          - heading "Satu ruang untuk menenangkan diri" [level=2] [ref=e41]
+          - paragraph [ref=e42]: Tiga hal sederhana, tanpa tekanan.
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e46]:
+              - heading "Meditasi Terpandu" [level=3] [ref=e50]
+              - paragraph [ref=e51]: Sesi 7 fase dengan skrip yang bisa dibaca sebelum mulai.
+              - list [ref=e52]:
+                - listitem [ref=e53]:
+                  - generic [ref=e56]: 7 fase yang mengalir dari tarik hingga hela napas.
+                - listitem [ref=e57]:
+                  - generic [ref=e60]: Skrip lengkap bisa dibaca dulu sebelum mulai.
+                - listitem [ref=e61]:
+                  - generic [ref=e64]: Durasi bebas, mulai dari 3 menit.
+            - generic [ref=e66]:
+              - generic [ref=e67]:
+                - generic [ref=e68]:
+                  - paragraph [ref=e69]: 01 — 07
+                  - paragraph [ref=e70]: 4 · 2 · 4
+                - generic [ref=e71]: 7 fase
+              - generic [ref=e80]:
+                - generic [ref=e81]: Tarik
+                - generic [ref=e82]: Tahan
+                - generic [ref=e83]: Hela
+          - generic [ref=e84]:
+            - generic [ref=e86]:
+              - heading "Suara Relaksasi" [level=3] [ref=e90]
+              - paragraph [ref=e91]: Hujan, laut, dan hutan — dibangkitkan langsung di browser.
+              - list [ref=e92]:
+                - listitem [ref=e93]:
+                  - generic [ref=e96]: Hujan, laut, dan hutan.
+                - listitem [ref=e97]:
+                  - generic [ref=e100]: Dibangkitkan langsung di browser, tanpa streaming.
+                - listitem [ref=e101]:
+                  - generic [ref=e104]: Campur beberapa suara jadi ambiens milikmu.
+            - img "Suara Relaksasi" [ref=e107]
+          - generic [ref=e119]:
+            - generic [ref=e121]:
+              - heading "Mood Tracker" [level=3] [ref=e125]
+              - paragraph [ref=e126]: Catat suasana hati dan lihat pola 30 harimu pelan-pelan.
+              - list [ref=e127]:
+                - listitem [ref=e128]:
+                  - generic [ref=e131]: Check-in sekejap setelah sesi.
+                - listitem [ref=e132]:
+                  - generic [ref=e135]: Lihat pola 30 harimu dalam grafik kecil.
+                - listitem [ref=e136]:
+                  - generic [ref=e139]: Semua tersimpan lokal di perangkatmu.
+            - generic [ref=e141]:
+              - generic [ref=e142]:
+                - paragraph [ref=e143]: 30 hari
+                - generic [ref=e144]: +2 pola
+              - generic [ref=e153]:
+                - generic [ref=e154]: "01"
+                - generic [ref=e155]: "02"
+                - generic [ref=e156]: "03"
+                - generic [ref=e157]: "04"
+                - generic [ref=e158]: "05"
+                - generic [ref=e159]: "06"
+                - generic [ref=e160]: "07"
+      - generic [ref=e161]:
+        - generic [ref=e163]:
+          - heading "Dibuat untuk momen-momenmu" [level=2] [ref=e164]
+          - paragraph [ref=e165]: Satu alat, banyak situasi.
+        - generic [ref=e166]:
+          - article [ref=e168]:
+            - heading "Pemula yang ingin mulai" [level=3] [ref=e172]
+            - paragraph [ref=e173]: Belum pernah meditasi? Mulai dari sesi 3 menit dengan panduan langkah demi langkah.
+          - article [ref=e175]:
+            - heading "Jadwal yang padat" [level=3] [ref=e179]
+            - paragraph [ref=e180]: Di sela rapat atau perjalanan, lima menit cukup untuk kembali tenang.
+          - article [ref=e182]:
+            - heading "Sulit tidur" [level=3] [ref=e186]
+            - paragraph [ref=e187]: Suara relaksasi dan latihan napas untuk menenangkan pikiran sebelum tidur.
+      - generic [ref=e188]:
+        - generic [ref=e190]:
+          - heading "Cara kerjanya" [level=2] [ref=e191]
+          - paragraph [ref=e192]: Tiga langkah, sesuai ritme kamu.
+        - generic [ref=e193]:
+          - generic [ref=e195]:
+            - generic [ref=e196]: "01"
+            - heading "Siapkan sesi" [level=3] [ref=e199]
+            - paragraph [ref=e200]: Pilih tujuan, guide, dan durasi dalam 5 langkah singkat.
+          - generic [ref=e202]:
+            - generic [ref=e203]: "02"
+            - heading "Dengarkan & ikuti" [level=3] [ref=e206]
+            - paragraph [ref=e207]: Teks panduan berganti mengikuti napasmu, ditemani suara ambien.
+          - generic [ref=e209]:
+            - generic [ref=e210]: "03"
+            - heading "Catat perasaanmu" [level=3] [ref=e212]
+            - paragraph [ref=e213]: Check-in singkat dan lihat progres tumbuh pelan-pelan.
+      - generic [ref=e214]:
+        - generic [ref=e216]:
+          - heading "Kata mereka" [level=2] [ref=e217]
+          - paragraph [ref=e218]: Cerita kecil dari pengguna Mindfulnity.
+        - generic [ref=e219]:
+          - figure [ref=e221]:
+            - blockquote [ref=e224]: “Lima menit sebelum tidur benar-benar mengubah rutinitasku. Rasanya lebih ringan.”
+            - generic [ref=e225]:
+              - generic [ref=e226]: A
+              - generic [ref=e227]:
+                - paragraph [ref=e228]: Anita
+                - paragraph [ref=e229]: Desainer, Jakarta
+              - generic "5 / 5" [ref=e230]
+          - figure [ref=e242]:
+            - blockquote [ref=e245]: “Aku tidak perlu akun atau aplikasi lain. Buka, tarik napas, selesai.”
+            - generic [ref=e246]:
+              - generic [ref=e247]: R
+              - generic [ref=e248]:
+                - paragraph [ref=e249]: Rizky
+                - paragraph [ref=e250]: Mahasiswa, Bandung
+              - generic "5 / 5" [ref=e251]
+          - figure [ref=e263]:
+            - blockquote [ref=e266]: “Grafik mood-nya bikin aku sadar polaku, pelan-pelan tapi nyata.”
+            - generic [ref=e267]:
+              - generic [ref=e268]: S
+              - generic [ref=e269]:
+                - paragraph [ref=e270]: Sarah
+                - paragraph [ref=e271]: Guru, Surabaya
+              - generic "5 / 5" [ref=e272]
+      - generic [ref=e283]:
+        - generic [ref=e285]:
+          - heading "Pertanyaan yang sering diajukan" [level=2] [ref=e286]
+          - paragraph [ref=e287]: Jawaban singkat untuk hal yang paling sering ditanyakan.
+        - generic [ref=e289]:
+          - generic [ref=e290]:
+            - heading [level=3] [ref=e291]:
+              - button "Apakah data saya aman?" [expanded] [ref=e292]
+            - region "Apakah data saya aman?" [ref=e296]: Semua data tersimpan di browser perangkatmu sendiri. Tidak ada akun, tidak ada server, dan tidak ada pelacakan.
+          - heading [level=3] [ref=e298]:
+            - button "Apakah butuh koneksi internet?" [ref=e299]
+          - heading [level=3] [ref=e304]:
+            - button "Berapa lama satu sesi?" [ref=e305]
+          - heading [level=3] [ref=e310]:
+            - button "Apakah suara relaksasi di-streaming?" [ref=e311]
+          - heading [level=3] [ref=e316]:
+            - button "Apa bedanya dengan aplikasi meditasi lain?" [ref=e317]
+      - generic [ref=e324]:
+        - heading "Tidak perlu sempurna, cukup mulai." [level=2] [ref=e325]
+        - paragraph [ref=e326]: Lima menit sehari untuk dirimu sendiri.
+        - link "Mulai" [ref=e327] [cursor=pointer]:
+          - /url: /app
+    - contentinfo [ref=e328]:
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - generic [ref=e331]: Mindfulnity
+          - paragraph [ref=e336]: Mindfulnity — ruang kecil untuk menenangkan diri.
+          - paragraph [ref=e337]: Semua data tersimpan di browser ini. Tidak ada akun, tidak ada pelacakan.
+        - generic [ref=e340]:
+          - navigation "Footer" [ref=e341]:
+            - link "Fitur" [ref=e342] [cursor=pointer]:
+              - /url: "#fitur"
+            - link "Skenario" [ref=e343] [cursor=pointer]:
+              - /url: "#skenario"
+            - link "Cara Kerja" [ref=e344] [cursor=pointer]:
+              - /url: "#cara-kerja"
+            - link "Testimoni" [ref=e345] [cursor=pointer]:
+              - /url: "#testimoni"
+            - link "FAQ" [ref=e346] [cursor=pointer]:
+              - /url: "#faq"
+            - link "Mulai" [ref=e347] [cursor=pointer]:
+              - /url: /app
+          - link "Mulai" [ref=e348] [cursor=pointer]:
+            - /url: /app
+          - paragraph [ref=e349]: © 2026 Mindfulnity. Hak cipta.
+  - button "Open Next.js Dev Tools" [ref=e355] [cursor=pointer]

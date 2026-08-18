@@ -1,0 +1,201 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "Mindfulnity" [ref=e5] [cursor=pointer]:
+          - /url: "#top"
+        - generic [ref=e11]:
+          - link "Features" [ref=e359] [cursor=pointer]:
+            - /url: "#fitur"
+          - link "Use cases" [ref=e360] [cursor=pointer]:
+            - /url: "#skenario"
+          - link "How it works" [ref=e361] [cursor=pointer]:
+            - /url: "#cara-kerja"
+          - link "Testimonials" [ref=e362] [cursor=pointer]:
+            - /url: "#testimoni"
+          - link "FAQ" [ref=e16] [cursor=pointer]:
+            - /url: "#faq"
+        - generic [ref=e17]:
+          - button "Ganti ke Bahasa Indonesia" [ref=e363]: ID
+          - link "Start" [ref=e364] [cursor=pointer]:
+            - /url: /app
+    - main [ref=e20]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Stored in this browser
+          - heading "Calm starts with a single breath." [level=1] [ref=e365]
+          - paragraph [ref=e28]: Guided meditation, relaxation sounds, and mood tracking — all stored in your browser.
+          - generic [ref=e29]:
+            - link "Start" [ref=e366] [cursor=pointer]:
+              - /url: /app
+            - link "See how it works" [ref=e367] [cursor=pointer]:
+              - /url: "#cara-kerja"
+        - img "A calm breathing illustration" [ref=e368]
+      - generic [ref=e38]:
+        - generic [ref=e40]:
+          - heading "One space to unwind" [level=2] [ref=e369]
+          - paragraph [ref=e42]: Three simple things, no pressure.
+        - generic [ref=e43]:
+          - generic [ref=e370]:
+            - generic [ref=e372]:
+              - heading "Guided Meditation" [level=3] [ref=e376]
+              - paragraph [ref=e377]: 7-phase sessions with scripts you can review before starting.
+              - list [ref=e378]:
+                - listitem [ref=e379]:
+                  - generic [ref=e382]: 7 phases that flow from inhale to exhale.
+                - listitem [ref=e383]:
+                  - generic [ref=e386]: Full script you can review before starting.
+                - listitem [ref=e387]:
+                  - generic [ref=e390]: Flexible duration, from 3 minutes up.
+            - generic [ref=e392]:
+              - generic [ref=e393]:
+                - generic [ref=e394]:
+                  - paragraph [ref=e395]: 01 — 07
+                  - paragraph [ref=e396]: 4 · 2 · 4
+                - generic [ref=e397]: 7 fase
+              - generic [ref=e406]:
+                - generic [ref=e407]: Tarik
+                - generic [ref=e408]: Tahan
+                - generic [ref=e409]: Hela
+          - generic [ref=e410]:
+            - generic [ref=e412]:
+              - heading "Relaxation Sounds" [level=3] [ref=e416]
+              - paragraph [ref=e417]: Rain, ocean, and forest — generated right in your browser.
+              - list [ref=e418]:
+                - listitem [ref=e419]:
+                  - generic [ref=e422]: Rain, ocean, and forest.
+                - listitem [ref=e423]:
+                  - generic [ref=e426]: Generated in your browser — no streaming.
+                - listitem [ref=e427]:
+                  - generic [ref=e430]: Blend sounds into your own ambient mix.
+            - img "Relaxation Sounds" [ref=e433]
+          - generic [ref=e119]:
+            - generic [ref=e121]:
+              - heading "Mood Tracker" [level=3] [ref=e125]
+              - paragraph [ref=e126]: Log how you feel and watch your 30-day pattern grow.
+              - list [ref=e127]:
+                - listitem [ref=e445]:
+                  - generic [ref=e448]: A quick check-in after each session.
+                - listitem [ref=e449]:
+                  - generic [ref=e452]: Watch your 30-day pattern in a small chart.
+                - listitem [ref=e453]:
+                  - generic [ref=e456]: Everything stays on your device.
+            - generic [ref=e141]:
+              - generic [ref=e142]:
+                - paragraph [ref=e143]: 30 hari
+                - generic [ref=e144]: +2 pola
+              - generic [ref=e153]:
+                - generic [ref=e154]: "01"
+                - generic [ref=e155]: "02"
+                - generic [ref=e156]: "03"
+                - generic [ref=e157]: "04"
+                - generic [ref=e158]: "05"
+                - generic [ref=e159]: "06"
+                - generic [ref=e160]: "07"
+      - generic [ref=e161]:
+        - generic [ref=e163]:
+          - heading "Made for your moments" [level=2] [ref=e457]
+          - paragraph [ref=e165]: One tool, many situations.
+        - generic [ref=e166]:
+          - article [ref=e459]:
+            - heading "Just getting started" [level=3] [ref=e463]
+            - paragraph [ref=e464]: Never meditated? Start with a 3-minute session and step-by-step guidance.
+          - article [ref=e466]:
+            - heading "A packed schedule" [level=3] [ref=e470]
+            - paragraph [ref=e471]: Between meetings or on a commute, five minutes is enough to recenter.
+          - article [ref=e473]:
+            - heading "Trouble sleeping" [level=3] [ref=e477]
+            - paragraph [ref=e478]: Relaxation sounds and breathing practice to quiet your mind before bed.
+      - generic [ref=e188]:
+        - generic [ref=e190]:
+          - heading "How it works" [level=2] [ref=e479]
+          - paragraph [ref=e192]: Three steps, at your own pace.
+        - generic [ref=e193]:
+          - generic [ref=e481]:
+            - generic [ref=e482]: "01"
+            - heading "Set up a session" [level=3] [ref=e485]
+            - paragraph [ref=e486]: Pick a goal, guide, and duration in 5 short steps.
+          - generic [ref=e488]:
+            - generic [ref=e489]: "02"
+            - heading "Listen & follow" [level=3] [ref=e492]
+            - paragraph [ref=e493]: Guided text shifts with your breath, backed by ambient sound.
+          - generic [ref=e495]:
+            - generic [ref=e496]: "03"
+            - heading "Log how you feel" [level=3] [ref=e498]
+            - paragraph [ref=e499]: A short check-in and watch your progress grow slowly.
+      - generic [ref=e214]:
+        - generic [ref=e216]:
+          - heading "What people say" [level=2] [ref=e500]
+          - paragraph [ref=e218]: Small stories from Mindfulnity users.
+        - generic [ref=e219]:
+          - figure [ref=e221]:
+            - blockquote [ref=e224]: “Five minutes before bed truly changed my routine. I feel lighter.”
+            - generic [ref=e225]:
+              - generic [ref=e226]: A
+              - generic [ref=e227]:
+                - paragraph [ref=e228]: Anita
+                - paragraph [ref=e229]: Designer, Jakarta
+              - generic "5 / 5" [ref=e230]
+          - figure [ref=e242]:
+            - blockquote [ref=e245]: “No account, no extra apps. Open it, breathe, done.”
+            - generic [ref=e246]:
+              - generic [ref=e247]: R
+              - generic [ref=e248]:
+                - paragraph [ref=e249]: Rizky
+                - paragraph [ref=e250]: Student, Bandung
+              - generic "5 / 5" [ref=e251]
+          - figure [ref=e263]:
+            - blockquote [ref=e266]: “The mood chart helped me notice my patterns — slowly but surely.”
+            - generic [ref=e267]:
+              - generic [ref=e268]: S
+              - generic [ref=e269]:
+                - paragraph [ref=e270]: Sarah
+                - paragraph [ref=e271]: Teacher, Surabaya
+              - generic "5 / 5" [ref=e272]
+      - generic [ref=e283]:
+        - generic [ref=e285]:
+          - heading "Frequently asked questions" [level=2] [ref=e501]
+          - paragraph [ref=e287]: Short answers to the things people ask most.
+        - generic [ref=e289]:
+          - heading [level=3] [ref=e503]:
+            - button "Is my data safe?" [ref=e504]
+          - heading [level=3] [ref=e510]:
+            - button "Do I need an internet connection?" [ref=e511]
+          - generic [ref=e515]:
+            - heading [level=3] [ref=e516]:
+              - button "How long is a session?" [expanded] [active] [ref=e517]
+            - region "How long is a session?" [ref=e542]: From 3 minutes up. You pick the duration that fits your day.
+          - heading [level=3] [ref=e522]:
+            - button "Are the relaxation sounds streamed?" [ref=e523]
+          - heading [level=3] [ref=e528]:
+            - button "How is this different from other meditation apps?" [ref=e529]
+      - generic [ref=e324]:
+        - heading "No need to be perfect, just start." [level=2] [ref=e533]
+        - paragraph [ref=e326]: Five minutes a day for yourself.
+        - link "Start" [ref=e534] [cursor=pointer]:
+          - /url: /app
+    - contentinfo [ref=e328]:
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - generic [ref=e331]: Mindfulnity
+          - paragraph [ref=e336]: Mindfulnity — a small space to calm down.
+          - paragraph [ref=e337]: All data stays in this browser. No accounts, no tracking.
+        - generic [ref=e340]:
+          - navigation "Footer" [ref=e341]:
+            - link "Features" [ref=e535] [cursor=pointer]:
+              - /url: "#fitur"
+            - link "Use cases" [ref=e536] [cursor=pointer]:
+              - /url: "#skenario"
+            - link "How it works" [ref=e537] [cursor=pointer]:
+              - /url: "#cara-kerja"
+            - link "Testimonials" [ref=e538] [cursor=pointer]:
+              - /url: "#testimoni"
+            - link "FAQ" [ref=e346] [cursor=pointer]:
+              - /url: "#faq"
+            - link "Start" [ref=e539] [cursor=pointer]:
+              - /url: /app
+          - link "Start" [ref=e540] [cursor=pointer]:
+            - /url: /app
+          - paragraph [ref=e349]: © 2026 Mindfulnity. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e355] [cursor=pointer]
+  - alert [ref=e541]
