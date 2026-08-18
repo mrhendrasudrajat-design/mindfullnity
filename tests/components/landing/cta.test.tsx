@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { LanguageProvider } from "@/components/landing/locale-context"
+import { LanguageProvider } from "@/components/providers/language-context"
 import { Cta } from "@/components/landing/cta"
 
 function renderCta() {

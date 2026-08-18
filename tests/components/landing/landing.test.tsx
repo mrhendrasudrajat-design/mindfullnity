@@ -13,7 +13,7 @@ describe("Landing (integration)", () => {
         name: /Tenang dimulai dari satu napas/,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText("Tersimpan di browser ini")).toBeInTheDocument()
+    expect(screen.getByText("Tersimpan di akunmu")).toBeInTheDocument()
     expect(screen.getAllByRole("link", { name: "Mulai" }).length).toBeGreaterThan(0)
   })
 
@@ -30,7 +30,7 @@ describe("Landing (integration)", () => {
         name: /Calm starts with a single breath/,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText("Stored in this browser")).toBeInTheDocument()
+    expect(screen.getByText("Stored in your account")).toBeInTheDocument()
     expect(
       await screen.findByRole("heading", { name: "Guided Meditation" }),
     ).toBeInTheDocument()

@@ -1,4 +1,4 @@
-export type Locale = "id" | "en"
+import { type Locale } from "./locale"
 
 export const landingCopy = {
   id: {
@@ -13,11 +13,11 @@ export const landingCopy = {
       start: "Mulai",
     },
     hero: {
-      badge: "Tersimpan di browser ini",
+      badge: "Tersimpan di akunmu",
       headlineStart: "Tenang dimulai dari",
       headlineAccent: "satu napas.",
       subtext:
-        "Meditasi terpandu, suara relaksasi, dan mood tracker — semuanya tersimpan di browser kamu.",
+        "Meditasi terpandu, suara relaksasi, dan mood tracker — tersimpan aman di akunmu.",
       primaryCta: "Mulai",
       secondaryCta: "Lihat cara kerja",
       circleLabel: "Ilustrasi lingkaran pernapasan",
@@ -53,7 +53,7 @@ export const landingCopy = {
           points: [
             "Check-in sekejap setelah sesi.",
             "Lihat pola 30 harimu dalam grafik kecil.",
-            "Semua tersimpan lokal di perangkatmu.",
+            "Semua tersimpan di akunmu.",
           ],
         },
       ],
@@ -110,12 +110,12 @@ export const landingCopy = {
         {
           question: "Apakah data saya aman?",
           answer:
-            "Semua data tersimpan di browser perangkatmu sendiri. Tidak ada akun, tidak ada server, dan tidak ada pelacakan.",
+            "Sesi dan mood tersimpan di akunmu dan dilindungi login. Tidak ada data yang dibagikan ke pihak lain.",
         },
         {
           question: "Apakah butuh koneksi internet?",
           answer:
-            "Tidak. Aplikasi berjalan sepenuhnya di perangkatmu, jadi kamu bisa bermeditasi di mana pun.",
+            "Butuh internet untuk masuk akun dan menyimpan sesi. Suara relaksasi tetap dibangkitkan langsung di browser.",
         },
         {
           question: "Berapa lama satu sesi?",
@@ -161,7 +161,7 @@ export const landingCopy = {
     },
     footer: {
       tagline: "Mindfulnity — ruang kecil untuk menenangkan diri.",
-      privacy: "Semua data tersimpan di browser ini. Tidak ada akun, tidak ada pelacakan.",
+      privacy: "Data sesi & mood tersimpan di akunmu. Tanpa pelacakan.",
       rights: "Hak cipta.",
     },
   },
@@ -177,11 +177,11 @@ export const landingCopy = {
       start: "Start",
     },
     hero: {
-      badge: "Stored in this browser",
+      badge: "Stored in your account",
       headlineStart: "Calm starts with",
       headlineAccent: "a single breath.",
       subtext:
-        "Guided meditation, relaxation sounds, and mood tracking — all stored in your browser.",
+        "Guided meditation, relaxation sounds, and mood tracking — stored safely in your account.",
       primaryCta: "Start",
       secondaryCta: "See how it works",
       circleLabel: "A calm breathing illustration",
@@ -216,7 +216,7 @@ export const landingCopy = {
           points: [
             "A quick check-in after each session.",
             "Watch your 30-day pattern in a small chart.",
-            "Everything stays on your device.",
+            "Everything is stored in your account.",
           ],
         },
       ],
@@ -272,12 +272,12 @@ export const landingCopy = {
         {
           question: "Is my data safe?",
           answer:
-            "All data lives in your own browser. No accounts, no servers, and no tracking.",
+            "Sessions and moods are stored in your account, protected by sign-in. No data is shared with third parties.",
         },
         {
           question: "Do I need an internet connection?",
           answer:
-            "No. The app runs entirely on your device, so you can meditate anywhere.",
+            "You need internet to sign in and save sessions. Relaxation sounds are still generated right in your browser.",
         },
         {
           question: "How long is a session?",
@@ -322,7 +322,7 @@ export const landingCopy = {
     },
     footer: {
       tagline: "Mindfulnity — a small space to calm down.",
-      privacy: "All data stays in this browser. No accounts, no tracking.",
+      privacy: "Sessions & moods are stored in your account. No tracking.",
       rights: "All rights reserved.",
     },
   },
@@ -332,15 +332,4 @@ export type LandingCopy = (typeof landingCopy)[Locale]
 
 export function getLandingCopy(locale: Locale): LandingCopy {
   return landingCopy[locale]
-}
-
-export function isLocale(value: string | null | undefined): value is Locale {
-  return value === "id" || value === "en"
-}
-
-export function getInitialLocale(
-  stored: string | null | undefined,
-  fallback: Locale = "id",
-): Locale {
-  return isLocale(stored) ? stored : fallback
 }

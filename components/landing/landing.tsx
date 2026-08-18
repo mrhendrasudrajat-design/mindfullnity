@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 
 import { Hero } from "./hero"
-import { LanguageProvider } from "./locale-context"
+import { LanguageProvider } from "@/components/providers/language-context"
 import { Navbar } from "./navbar"
 
 const Features = dynamic(() => import("./features").then((m) => m.Features))

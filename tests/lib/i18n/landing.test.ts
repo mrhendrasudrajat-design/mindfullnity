@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  getInitialLocale,
-  getLandingCopy,
-  isLocale,
-  landingCopy,
-} from "@/lib/landing-i18n"
+import { getLandingCopy, landingCopy } from "@/lib/i18n/landing"
 
 function shape(value: unknown): string {
   if (Array.isArray(value)) {
@@ -66,36 +61,5 @@ describe("getLandingCopy", () => {
   it("returns the en dictionary for 'en'", () => {
     expect(getLandingCopy("en").nav.start).toBe("Start")
     expect(getLandingCopy("en").hero.headlineStart).toBe("Calm starts with")
-  })
-})
-
-describe("isLocale", () => {
-  it("accepts only 'id' and 'en'", () => {
-    expect(isLocale("id")).toBe(true)
-    expect(isLocale("en")).toBe(true)
-    expect(isLocale("fr")).toBe(false)
-    expect(isLocale("")).toBe(false)
-    expect(isLocale(null)).toBe(false)
-    expect(isLocale(undefined)).toBe(false)
-  })
-})
-
-describe("getInitialLocale", () => {
-  it("falls back to 'id' by default", () => {
-    expect(getInitialLocale(null)).toBe("id")
-    expect(getInitialLocale(undefined)).toBe("id")
-  })
-
-  it("keeps a valid stored locale", () => {
-    expect(getInitialLocale("en")).toBe("en")
-    expect(getInitialLocale("id")).toBe("id")
-  })
-
-  it("ignores invalid stored values", () => {
-    expect(getInitialLocale("de")).toBe("id")
-  })
-
-  it("respects an explicit fallback", () => {
-    expect(getInitialLocale(null, "en")).toBe("en")
   })
 })

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { LanguageProvider } from "@/components/landing/locale-context"
+import { LanguageProvider } from "@/components/providers/language-context"
 import { Footer } from "@/components/landing/footer"
 
 function renderFooter() {
@@ -18,7 +18,7 @@ describe("Footer", () => {
     expect(screen.getByText("Mindfulnity", { selector: "span" })).toBeInTheDocument()
     expect(
       screen.getByText(
-        "Semua data tersimpan di browser ini. Tidak ada akun, tidak ada pelacakan.",
+        "Data sesi & mood tersimpan di akunmu. Tanpa pelacakan.",
       ),
     ).toBeInTheDocument()
   })

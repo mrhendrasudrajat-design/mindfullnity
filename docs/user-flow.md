@@ -17,7 +17,9 @@ Diadaptasi dari bahasa produk Wavr:
 
 ```
 LANDING (/)                     Landing → CTA "Mulai"
-   ↓
+   ↓ (proxy.ts: belum login → /auth/login)
+AUTH (/auth/login · /auth/signup)   Email/password atau Google
+   ↓ berhasil → /app
 DASHBOARD (/app)                Dashboard-first: sapaan, statistik, arsip, quick actions
    ├── "Sesi Baru" → WIZARD (/app/session/new)
    │      1. Personal start      nickname opsional, waktu sesi, durasi 5–60 mnt
@@ -25,13 +27,13 @@ DASHBOARD (/app)                Dashboard-first: sapaan, statistik, arsip, quick
    │      3. Guide               Mentor, Teman, Orang Tua, Future Self (nada teks)
    │      4. Bentuk Suara        suara alam + instrumen (Web Audio API)
    │      5. Anchor (opsional)   tempat aman, kata kunci, gratitude + ringkasan live
-   │      COMPOSE                animasi 5 tahap
+   │      COMPOSE                animasi 5 tahap → simpan ke Supabase
    │       ↓
    │      SESI (/app/session/[id])  teks 7 fase + timer cincin + suara ambien
    │       ↓ selesai
    │      CHECK-IN               mood sebelum/sesudah + refleksi + aksi integrasi
    │       ↓
-   │      kembali ke Dashboard (statistik & mood diperbarui)
+   │      kembali ke Dashboard (statistik & mood diperbarui dari DB)
    ├── SUARA (/app/sounds)       katalog suara relaksasi standalone
    └── MOOD (/app/mood)          catat mood + grafik 30 hari
 ```
@@ -107,18 +109,25 @@ Data check-in tersimpan dan menjadi input halaman Mood.
 ### 7. Halaman Mood (`/app/mood`)
 
 - Pilih mood emoji hari ini (5 level) + catatan singkat.
-- Grafik 30 hari (SVG custom).
+- Grafik 30 hari (recharts).
 - Riwayat digabung dari check-in sesi dan entri manual.
 
 ## Data & Persistensi
 
 Dokumen detail: [architecture.md](./architecture.md).
 
+**Supabase (per akun, RLS):**
+
+| Tabel | Isi |
+| --- | --- |
+| `sessions` | Sesi lengkap (tujuan, guide, campuran suara, skrip 7 fase, mood, refleksi, aksi integrasi) |
+| `mood_entries` | Entri mood harian (sumber: `manual` / `checkin`) |
+
+**localStorage (bukan data pengguna):**
+
 | Key | Struktur | Deskripsi |
 | --- | --- | --- |
 | `mind-draft-v1` | Objek draft wizard | Resume pembuatan sesi |
-| `mind-sessions` | `Session[]` | Riwayat sesi lengkap (fase, mood, refleksi) |
-| `mind-mood` | `{ date, mood, note? }[]` | Entri mood harian |
 | `mind-settings` | `{ language, volume }` | Preferensi pengguna |
 
 ## Perbedaan dari Wavr
@@ -126,9 +135,9 @@ Dokumen detail: [architecture.md](./architecture.md).
 | Aspek | Wavr | Aplikasi ini (MVP) |
 | --- | --- | --- |
 | Halaman | SPA 1 halaman | Landing + halaman aplikasi terpisah |
-| Masuk pertama | Wizard langsung | Dashboard-first, wizard saat "Sesi Baru" |
-| Pembuatan sesi | AI + API | Compose dari template lokal (ID/EN) |
-| Auth | Supabase (email/password) | Tidak ada, badge "Tersimpan di browser ini" |
+| Masuk pertama | Wizard langsung | Login dulu → dashboard-first, wizard saat "Sesi Baru" |
+| Pembuatan sesi | AI + API | Compose dari template lokal (ID/EN), simpan ke Supabase |
+| Auth | Supabase (email/password) | Supabase: email/password + Google |
 | Pembayaran | Stripe/Apple/Google | Tidak ada di MVP |
 | Suara panduan (voice) | ElevenLabs/OpenAI | Tidak ada; audio = suara ambien |
 | Program | 7/21/90 hari | Roadmap (tidak di MVP) |

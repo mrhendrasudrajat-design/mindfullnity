@@ -5,16 +5,27 @@ import {
   CloudRain,
   PersonSimpleTaiChi,
   Smiley,
+  SmileyMeh,
+  SmileySad,
+  SmileyWink,
+  SmileyXEyes,
   TreeEvergreen,
   Waves,
 } from "@phosphor-icons/react"
 import Image from "next/image"
 import type { ReactNode } from "react"
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 
-import { getLandingCopy } from "@/lib/landing-i18n"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { getLandingCopy } from "@/lib/i18n/landing"
 import { cn } from "@/lib/utils"
 
-import { useLandingLocale } from "./locale-context"
+import { useLandingLocale } from "@/components/providers/language-context"
 import { Reveal } from "./reveal"
 
 function MeditationVisual() {
@@ -81,39 +92,87 @@ function SoundsVisual({ alt }: { alt: string }) {
   )
 }
 
+const MOOD_SCALE = [
+  { level: 1, Icon: SmileyXEyes },
+  { level: 2, Icon: SmileySad },
+  { level: 3, Icon: SmileyMeh },
+  { level: 4, Icon: Smiley },
+  { level: 5, Icon: SmileyWink },
+]
+
+const moodChartData = [
+  { day: "01", mood: 3 },
+  { day: "02", mood: 4 },
+  { day: "03", mood: 2 },
+  { day: "04", mood: 5 },
+  { day: "05", mood: 3 },
+  { day: "06", mood: 4 },
+  { day: "07", mood: 4 },
+]
+
+const moodChartConfig = {
+  mood: {
+    label: "Mood",
+    color: "var(--chart-3)",
+  },
+} satisfies ChartConfig
+
 function MoodVisual() {
-  const values = [3, 4, 2, 5, 3, 4, 4]
+  const lastIndex = moodChartData.length - 1
+
   return (
     <div className="rounded-3xl border border-border bg-gradient-to-br from-primary/10 to-transparent p-8 md:p-10">
       <div className="flex items-start justify-between">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          30 hari
+          7 hari
         </p>
         <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           +2 pola
         </span>
       </div>
-      <div className="mt-10 flex h-28 items-end gap-2">
-        {values.map((value, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flex-1 rounded-full",
-              index === values.length - 1 ? "bg-primary" : "bg-primary/30",
-            )}
-            style={{ height: `${value * 20}%` }}
-          />
+
+      <div
+        aria-hidden
+        className="mt-6 flex items-center gap-2 text-muted-foreground"
+      >
+        {MOOD_SCALE.map(({ level, Icon }) => (
+          <Icon key={level} weight="fill" className="size-4" />
         ))}
       </div>
-      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-        <span>01</span>
-        <span>02</span>
-        <span>03</span>
-        <span>04</span>
-        <span>05</span>
-        <span>06</span>
-        <span>07</span>
-      </div>
+
+      <ChartContainer
+        config={moodChartConfig}
+        className="mt-4 h-[140px] w-full"
+      >
+        <BarChart accessibilityLayer data={moodChartData}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="day"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={10}
+          />
+          <YAxis
+            domain={[0, 5]}
+            ticks={[1, 2, 3, 4, 5]}
+            tickLine={false}
+            axisLine={false}
+            width={24}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent hideLabel />}
+          />
+          <Bar dataKey="mood" fill="var(--color-mood)" radius={[6, 6, 0, 0]}>
+            {moodChartData.map((_, index) => (
+              <Cell
+                key={index}
+                fillOpacity={index === lastIndex ? 1 : 0.35}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
     </div>
   )
 }

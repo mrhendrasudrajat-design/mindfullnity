@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
-import { LanguageProvider } from "@/components/landing/locale-context"
+import { LanguageProvider } from "@/components/providers/language-context"
 import { Faq } from "@/components/landing/faq"
 
 function renderFaq() {
@@ -33,7 +33,7 @@ describe("Faq", () => {
   it("shows the first answer by default", () => {
     renderFaq()
     expect(
-      screen.getByText(/Semua data tersimpan di browser/),
+      screen.getByText(/Sesi dan mood tersimpan di akunmu/),
     ).toBeInTheDocument()
   })
 

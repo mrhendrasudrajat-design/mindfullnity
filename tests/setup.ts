@@ -33,6 +33,14 @@ class IntersectionObserverMock {
 
 vi.stubGlobal("IntersectionObserver", IntersectionObserverMock)
 
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+vi.stubGlobal("ResizeObserver", ResizeObserverMock)
+
 vi.mock("next/dynamic", async () => {
   const { lazy } = await import("react")
   return {
@@ -51,6 +59,23 @@ vi.mock("next/dynamic", async () => {
           }
         }),
       ),
+  }
+})
+
+vi.mock("recharts", async () => {
+  const React = await import("react")
+  return {
+    Bar: () => React.createElement("rect", { "data-testid": "recharts-bar" }),
+    BarChart: ({ children }: { children?: React.ReactNode }) =>
+      React.createElement("div", { "data-testid": "recharts-bar-chart" }, children),
+    CartesianGrid: () => null,
+    Cell: () => null,
+    XAxis: () => null,
+    YAxis: () => null,
+    Tooltip: () => null,
+    Legend: () => null,
+    ResponsiveContainer: ({ children }: { children?: React.ReactNode }) =>
+      React.createElement("div", { "data-testid": "recharts-responsive-container" }, children),
   }
 })
 

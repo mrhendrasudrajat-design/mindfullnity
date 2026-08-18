@@ -2,12 +2,12 @@
 
 import { ShieldCheck } from "@phosphor-icons/react"
 
-import { getLandingCopy } from "@/lib/landing-i18n"
+import { getLandingCopy } from "@/lib/i18n/landing"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import { BreathingCircle } from "./breathing-circle"
-import { useLandingLocale } from "./locale-context"
+import { useLandingLocale } from "@/components/providers/language-context"
 
 export function Hero() {
   const { locale } = useLandingLocale()

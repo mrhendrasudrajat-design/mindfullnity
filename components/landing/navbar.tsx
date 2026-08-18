@@ -2,12 +2,12 @@
 
 import { GlobeHemisphereWest } from "@phosphor-icons/react"
 
-import { getLandingCopy } from "@/lib/landing-i18n"
+import { getLandingCopy } from "@/lib/i18n/landing"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import { Logo } from "./logo"
-import { useLandingLocale } from "./locale-context"
+import { useLandingLocale } from "@/components/providers/language-context"
 
 export function Navbar() {
   const { locale, toggleLocale } = useLandingLocale()

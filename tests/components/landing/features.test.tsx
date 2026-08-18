@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { LanguageProvider } from "@/components/landing/locale-context"
+import { LanguageProvider } from "@/components/providers/language-context"
 import { Features } from "@/components/landing/features"
 
 function renderFeatures() {
@@ -40,7 +40,7 @@ describe("Features", () => {
       screen.getByText(/tanpa streaming/),
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/tersimpan lokal/),
+      screen.getByText(/tersimpan di akunmu/),
     ).toBeInTheDocument()
   })
 
@@ -51,5 +51,14 @@ describe("Features", () => {
       "src",
       "https://picsum.photos/seed/mindfulnity-ocean/800/900",
     )
+  })
+
+  it("renders the mood tracker as a bar chart", () => {
+    const { container } = renderFeatures()
+    expect(screen.getByText("7 hari")).toBeInTheDocument()
+    expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument()
+    expect(
+      container.querySelector('[data-testid="recharts-bar"]'),
+    ).toBeInTheDocument()
   })
 })

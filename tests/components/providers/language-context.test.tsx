@@ -6,7 +6,7 @@ import {
   LANGUAGE_STORAGE_KEY,
   LanguageProvider,
   useLandingLocale,
-} from "@/components/landing/locale-context"
+} from "@/components/providers/language-context"
 
 function Probe() {
   const { locale, toggleLocale } = useLandingLocale()

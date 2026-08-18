@@ -8,12 +8,16 @@ import {
   type ReactNode,
 } from "react"
 
+import { getInitialLocale, type Locale } from "@/lib/i18n/locale"
 import {
-  getInitialLocale,
-  type Locale,
-} from "@/lib/landing-i18n"
+  readStorage,
+  STORAGE_KEYS,
+  subscribeStorage,
+  writeSettings,
+  type Settings,
+} from "@/lib/storage"
 
-export const LANGUAGE_STORAGE_KEY = "mind-settings"
+export const LANGUAGE_STORAGE_KEY = STORAGE_KEYS.settings
 
 type LanguageContextValue = {
   locale: Locale
@@ -24,59 +28,24 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
 function readStoredLanguage(): string | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as { language?: string }
-    return parsed.language ?? null
-  } catch {
-    return null
-  }
+  const settings = readStorage<Settings>(STORAGE_KEYS.settings, {})
+  return settings.language ?? null
 }
 
 function getSnapshot(): Locale {
   return getInitialLocale(readStoredLanguage())
 }
 
-const listeners = new Set<() => void>()
-
-function subscribe(callback: () => void): () => void {
-  listeners.add(callback)
-  return () => {
-    listeners.delete(callback)
-  }
-}
-
-function emitChange() {
-  for (const listener of listeners) listener()
-}
-
-function persistLanguage(locale: Locale) {
-  if (typeof window === "undefined") return
-  try {
-    const raw = window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
-    const existing = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
-    window.localStorage.setItem(
-      LANGUAGE_STORAGE_KEY,
-      JSON.stringify({ ...existing, language: locale }),
-    )
-  } catch {
-    // storage unavailable — ignore
-  }
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const locale = useSyncExternalStore<Locale>(
-    subscribe,
+    subscribeStorage,
     getSnapshot,
     () => "id",
   )
 
   const value = useMemo<LanguageContextValue>(() => {
     const apply = (next: Locale) => {
-      persistLanguage(next)
-      emitChange()
+      writeSettings({ language: next })
     }
     return {
       locale,
@@ -98,4 +67,8 @@ export function useLandingLocale(): LanguageContextValue {
     throw new Error("useLandingLocale must be used within LanguageProvider")
   }
   return ctx
+}
+
+export function useLocale(): LanguageContextValue {
+  return useLandingLocale()
 }

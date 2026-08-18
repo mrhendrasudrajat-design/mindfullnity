@@ -1,10 +1,10 @@
 "use client"
 
-import { getLandingCopy } from "@/lib/landing-i18n"
+import { getLandingCopy } from "@/lib/i18n/landing"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-import { useLandingLocale } from "./locale-context"
+import { useLandingLocale } from "@/components/providers/language-context"
 import { Reveal } from "./reveal"
 
 export function Cta() {
