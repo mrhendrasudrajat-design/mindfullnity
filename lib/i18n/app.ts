@@ -157,6 +157,7 @@ export const appCopy = {
       },
       composeAnimation: {
         title: "Menyusun sesimu",
+        generating: "Menyusun narasi AI…",
         steps: [
           "Membaca tujuanmu…",
           "Menyusun 7 fase…",
@@ -181,6 +182,8 @@ export const appCopy = {
         pause: "Jeda",
         resume: "Lanjutkan",
         end: "Selesai",
+        voiceLabel: "Panduan suara",
+        voicePreparing: "Menyiapkan suara…",
       },
       phases: {
         title: "Panduan",
@@ -391,6 +394,7 @@ export const appCopy = {
       },
       composeAnimation: {
         title: "Composing your session",
+        generating: "Writing your AI narration…",
         steps: [
           "Reading your goal…",
           "Assembling 7 phases…",
@@ -415,6 +419,8 @@ export const appCopy = {
         pause: "Pause",
         resume: "Resume",
         end: "Finish",
+        voiceLabel: "Voice guide",
+        voicePreparing: "Preparing voice…",
       },
       phases: {
         title: "Guide",

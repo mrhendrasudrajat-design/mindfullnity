@@ -7,8 +7,8 @@ import { useLocale } from "@/components/providers/language-context"
 import { Button } from "@/components/ui/button"
 import { getAppCopy } from "@/lib/i18n/app"
 import { STORAGE_KEYS } from "@/lib/storage"
-import { composeSession, type GoalId, type GuideId } from "@/lib/templates"
-import { createSessionAction } from "@/lib/supabase/actions"
+import { generateSessionAction } from "@/lib/supabase/actions"
+import type { GoalId, GuideId } from "@/lib/templates"
 import { useLocalStorage } from "@/lib/use-local-storage"
 import {
   canCompose,
@@ -46,6 +46,7 @@ export function Wizard({
   const [showBanner, setShowBanner] = useState(() => draftResumeStep(stored) > 0)
   const [composing, setComposing] = useState(false)
   const [composeIndex, setComposeIndex] = useState(0)
+  const [busy, setBusy] = useState(false)
 
   const seeded =
     stored ??
@@ -76,9 +77,10 @@ export function Wizard({
   const isLastStep = step === TOTAL_STEPS - 1
 
   async function runCompose() {
+    setBusy(true)
     const goal = draft.goal as GoalId
     const guide = draft.guide as GuideId
-    const session = composeSession({
+    const { id } = await generateSessionAction({
       goal,
       guide,
       soundMix: { nature: draft.nature, instruments: draft.instruments },
@@ -88,14 +90,6 @@ export function Wizard({
       keyword: draft.keyword,
       safePlace: draft.safePlace,
       gratitude: draft.gratitude,
-    })
-    const { id } = await createSessionAction({
-      title: session.title,
-      goal,
-      guide,
-      soundMix: session.soundMix,
-      durationMin: session.durationMin,
-      phases: session.phases,
     })
     resetStored()
     router.push(`/app/session/${id}`)
@@ -117,7 +111,7 @@ export function Wizard({
   }, [composing, composeIndex, copy])
 
   if (composing) {
-    return <ComposeAnimation copy={copy} index={composeIndex} />
+    return <ComposeAnimation copy={copy} index={composeIndex} busy={busy} />
   }
 
   const stepCopy = copy.steps[STEP_KEYS[step]]

@@ -106,6 +106,7 @@ tests/
 | `/app/session/:id` | Hasil sesi + pemutar meditasi + check-in |
 | `/app/sounds` | Suara relaksasi |
 | `/app/mood` | Mood tracker |
+| `/api/tts` | POST (protected): sintesis suara panduan via OpenRouter |
 
 ## Landing Page (Sudah Diimplementasikan)
 
@@ -137,7 +138,8 @@ Setup unit testing (Vitest + Testing Library) didokumentasikan di
   titik penjaga untuk seluruh halaman protected.
 - **RLS (Row Level Security)**: tabel `sessions` & `mood_entries` hanya bisa dibaca/ditulis
   oleh pemiliknya (`user_id = auth.uid()`), diperkuat `default auth.uid()` saat insert.
-- Kredensial: `.env.local` (URL + publishable key client; `SUPABASE_SECRET_KEY` server-only).
+- Kredensial: `.env.local` (URL + publishable key client; `SUPABASE_SECRET_KEY` server-only;
+  `OPENROUTER_API_KEY` server-only untuk narasi AI & TTS — lihat `.env.local.example`).
 
 ## State & Persistensi
 
@@ -146,11 +148,13 @@ via `lib/storage.ts` (SSR-safe, cache snapshot, sinkron antar-tab):
 
 | Key | Struktur | Deskripsi |
 | --- | --- | --- |
-| `mind-draft-v1` | Objek draft wizard | Resume pembuatan sesi antar langkah |
-| `mind-settings` | `{ language, volume }` | Preferensi pengguna |
+| `mind-draft-v1` | Objek draft wizard | Resume pembuatan sesi |
+| `mind-settings` | `{ language, volume, voice }` | Preferensi pengguna (suara panduan on/off) |
 
 Skema tabel `sessions` dan `mood_entries` serta policy RLS ada di
-`supabase/migrations/20260818_init.sql`.
+`supabase/migrations/20260818_init.sql` (+ `20260826_relational_fix.sql` untuk relasi
+`mood_entries.session_id → sessions.id` (cascade), uniqueness check-in 1/sesi & manual 1/hari,
+`updated_at` + trigger, dan `comment on`).
 
 Skema `Session` (adaptasi model sesi Wavr):
 
@@ -189,14 +193,33 @@ Derived data: total menit, jumlah sesi, dan konsistensi dihitung dari `mind-sess
 - Suara alam: hujan, laut, hutan, angin, malam (+ instrumen: pad lembut, kotak musik)
 - Metadata di `lib/sound-catalog.ts` — menambah suara baru cukup 1 entri di katalog +
   generator di engine (+ label di dictionary)
+- `stop()` memutus semua node (source/filter/gain/osilator, try/catch) dan menutup
+  `AudioContext` saat idle; `AppShell` memanggil `stopAll()` setiap ganti route
+  (BGM tidak pernah bocor ke halaman lain)
 
-## Pembuatan Sesi (Tanpa AI)
+## Suara Panduan (TTS)
 
-- Sesi "disusun" dari template lokal, lalu **disimpan ke Supabase** (tabel `sessions`)
-- `lib/templates.ts` menyediakan skrip 7 fase per tujuan (ID + EN) + `composeSession()`
-  yang merakit `Session` (intro persona guide, interpolasi anchor, fallback default)
-- Persona guide memengaruhi nada bahasa teks; anchor pengguna disisipkan ke teks
-- Tanpa produksi suara panduan (voice) di MVP; suara = ambien prosedural
+- **Sumber**: OpenRouter `/api/v1/audio/speech`, model `fish-audio/s2.1-pro-free:free`
+  (gratis, 83 bahasa auto-detect termasuk Indonesia), output mp3
+- **Server**: `lib/tts.ts` + route `app/api/tts/route.ts` (guard `requireUser()`,
+  batas panjang teks, error mapping non-200)
+- **Client**: `lib/voice-player.ts` — antrian `HTMLAudioElement` (pause/resume/stop,
+  prefetch fase berikutnya, cache per teks, skip segmen gagal)
+- Toggle "Panduan suara" di pemutar sesi; preferensi di `mind-settings.voice`
+- **Input TTS = `phase.lines` dari sesi** — teks yang sama persis dengan yang ditampilkan
+  (narasi AI = placeholder = suara). Tidak pernah mengirim email/mood/refleksi.
+
+## Pembuatan Sesi (Narasi AI + Fallback Template)
+
+- Saat "Compose sesi saya", server action `generateSessionAction` memanggil **LLM gratis
+  via OpenRouter** (`lib/ai-script.ts`, model `z-ai/glm-5.2:free` dengan fallback routing)
+  dengan input = pilihan wizard (goal, guide, durasi, bahasa, nickname, anchor)
+- LLM mengembalikan JSON 7 fase → disanitasi ketat (id valid, urutan `PHASE_IDS`,
+  batas baris) → disimpan ke `sessions.phases`
+- **Fallback otomatis** ke `composeSession()` (template lokal di `lib/templates.ts`)
+  saat API key kosong, timeout, respons tidak valid — sesi tidak pernah gagal,
+  prinsip anti-tekanan
+- Hanya data pilihan sesi yang dikirim ke LLM/TTS; data akun & check-in tidak pernah
 
 ## Pola
 

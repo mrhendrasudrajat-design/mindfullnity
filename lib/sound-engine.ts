@@ -29,6 +29,7 @@ type SoundTrack = {
   start: () => void
   stop: () => void
   setVolume: (volume: number) => void
+  dispose?: () => void
 }
 
 function connectGain(ctx: AudioContext) {
@@ -73,9 +74,18 @@ function noiseTrack(
     },
     stop: () => {
       fadeGain(gain, 0)
-      setTimeout(() => source.stop(), 900)
     },
     setVolume: (v: number) => fadeGain(gain, v, 0.2),
+    dispose: () => {
+      try {
+        source.stop()
+      } catch {
+        // sudah berhenti
+      }
+      source.disconnect()
+      filter.disconnect()
+      gain.disconnect()
+    },
   }
 }
 
@@ -116,12 +126,21 @@ function lfoTrack(
     },
     stop: () => {
       fadeGain(gain, 0)
-      setTimeout(() => {
-        source.stop()
-        lfo.stop()
-      }, 900)
     },
     setVolume: (v: number) => fadeGain(gain, v, 0.2),
+    dispose: () => {
+      try {
+        source.stop()
+        lfo.stop()
+      } catch {
+        // sudah berhenti
+      }
+      source.disconnect()
+      filter.disconnect()
+      lfo.disconnect()
+      lfoGain.disconnect()
+      gain.disconnect()
+    },
   }
 }
 
@@ -132,6 +151,7 @@ function musicBoxTrack(ctx: AudioContext, volume: number): SoundTrack {
   let timer: ReturnType<typeof setTimeout> | null = null
   let step = 0
   let stopped = false
+  const activeNotes = new Set<OscillatorNode>()
 
   const playNote = (frequency: number) => {
     const osc = ctx.createOscillator()
@@ -143,6 +163,16 @@ function musicBoxTrack(ctx: AudioContext, volume: number): SoundTrack {
     noteGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7)
     osc.connect(noteGain)
     noteGain.connect(gain)
+    activeNotes.add(osc)
+    osc.onended = () => {
+      activeNotes.delete(osc)
+      try {
+        osc.disconnect()
+        noteGain.disconnect()
+      } catch {
+        // sudah dilepas
+      }
+    }
     osc.start()
     osc.stop(ctx.currentTime + 0.75)
   }
@@ -150,6 +180,7 @@ function musicBoxTrack(ctx: AudioContext, volume: number): SoundTrack {
   return {
     start: () => {
       stopped = false
+      step = 0
       fadeGain(gain, volume)
       const loop = () => {
         if (stopped) return
@@ -165,6 +196,17 @@ function musicBoxTrack(ctx: AudioContext, volume: number): SoundTrack {
       fadeGain(gain, 0)
     },
     setVolume: (v: number) => fadeGain(gain, v, 0.2),
+    dispose: () => {
+      for (const osc of activeNotes) {
+        try {
+          osc.stop()
+        } catch {
+          // sudah berhenti
+        }
+      }
+      activeNotes.clear()
+      gain.disconnect()
+    },
   }
 }
 
@@ -198,9 +240,19 @@ const TRACKS: Record<SoundId, (ctx: AudioContext, volume: number) => SoundTrack>
       start: () => fadeGain(gain, volume),
       stop: () => {
         fadeGain(gain, 0)
-        setTimeout(() => oscillators.forEach((osc) => osc.stop()), 900)
       },
       setVolume: (v: number) => fadeGain(gain, v, 0.2),
+      dispose: () => {
+        for (const osc of oscillators) {
+          try {
+            osc.stop()
+          } catch {
+            // sudah berhenti
+          }
+          osc.disconnect()
+        }
+        gain.disconnect()
+      },
     }
   },
   musicBox: (ctx, volume) => musicBoxTrack(ctx, volume),
@@ -237,8 +289,24 @@ export class SoundEngine {
   stop(id: SoundId): void {
     const track = this.tracks.get(id)
     if (!track) return
-    track.stop()
     this.tracks.delete(id)
+    track.stop()
+    window.setTimeout(() => track.dispose?.(), 950)
+    this.scheduleContextClose()
+  }
+
+  private scheduleContextClose(): void {
+    if (this.tracks.size > 0) return
+    const ctx = this.ctx
+    if (!ctx) return
+    window.setTimeout(() => {
+      if (this.tracks.size === 0) {
+        void ctx.close().catch(() => {
+          // konteks sudah ditutup
+        })
+        this.ctx = null
+      }
+    }, 1200)
   }
 
   setVolume(id: SoundId, volume: number): void {

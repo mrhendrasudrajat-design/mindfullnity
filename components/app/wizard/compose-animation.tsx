@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils"
 export function ComposeAnimation({
   copy,
   index,
+  busy,
 }: {
   copy: AppCopy["wizard"]
   index: number
+  busy: boolean
 }) {
   return (
     <div className="flex flex-col items-center gap-8 py-10 text-center">
@@ -33,6 +35,11 @@ export function ComposeAnimation({
               {label}
             </li>
           ))}
+          {busy ? (
+            <li className="text-sm font-medium text-primary">
+              {copy.composeAnimation.generating}
+            </li>
+          ) : null}
         </ol>
       </div>
     </div>

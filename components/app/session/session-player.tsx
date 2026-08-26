@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Pause, Play, Stop } from "@phosphor-icons/react"
+import { Pause, Play, SpeakerHigh, SpeakerX, Stop } from "@phosphor-icons/react"
 
 import { useLocale } from "@/components/providers/language-context"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,10 @@ import { getAppCopy } from "@/lib/i18n/app"
 import { activePhaseIndex, ringProgress } from "@/lib/player"
 import { soundEngine } from "@/lib/sound-engine"
 import type { SoundId } from "@/lib/sound-catalog"
+import { readSettings, writeSettings } from "@/lib/storage"
 import type { Session } from "@/lib/templates"
+import { cn } from "@/lib/utils"
+import { voicePlayer } from "@/lib/voice-player"
 
 export function SessionPlayer({
   session,
@@ -24,6 +27,10 @@ export function SessionPlayer({
   const [remaining, setRemaining] = useState(session.durationMin * 60)
   const [paused, setPaused] = useState(false)
   const pausedRef = useRef(false)
+  const [voiceOn, setVoiceOn] = useState(() => readSettings().voice ?? true)
+  const voiceOnRef = useRef(voiceOn)
+  const lastVoicePhase = useRef(-1)
+  const [voiceStatus, setVoiceStatus] = useState(voicePlayer.getStatus())
 
   const total = session.durationMin * 60
   const elapsed = total - remaining
@@ -47,6 +54,7 @@ export function SessionPlayer({
     if (pausedRef.current) return
     if (remaining <= 0) {
       soundEngine.stopAll()
+      voicePlayer.stop()
       onFinish()
       return
     }
@@ -54,9 +62,43 @@ export function SessionPlayer({
     return () => clearTimeout(timer)
   }, [remaining, paused, onFinish])
 
+  useEffect(() => {
+    voiceOnRef.current = voiceOn
+    if (!voiceOn) voicePlayer.stop()
+    return () => voicePlayer.stop()
+  }, [voiceOn])
+
+  useEffect(() => {
+    return voicePlayer.subscribe(() => setVoiceStatus(voicePlayer.getStatus()))
+  }, [])
+
+  useEffect(() => {
+    if (!voiceOnRef.current) return
+    if (phaseIndex === lastVoicePhase.current) return
+    lastVoicePhase.current = phaseIndex
+    const lines = phase.lines.join(" ")
+    if (lines) {
+      void voicePlayer.play([lines])
+      const remaining = session.phases
+        .slice(phaseIndex + 1)
+        .map((next) => next.lines.join(" "))
+        .filter(Boolean)
+      if (remaining.length > 0) void voicePlayer.prefetchAll(remaining)
+    }
+  }, [phaseIndex, phase, session.phases])
+
   function togglePause() {
     pausedRef.current = !pausedRef.current
     setPaused(pausedRef.current)
+    if (pausedRef.current) voicePlayer.pause()
+    else voicePlayer.resume()
+  }
+
+  function toggleVoice() {
+    const next = !voiceOnRef.current
+    voiceOnRef.current = next
+    setVoiceOn(next)
+    writeSettings({ voice: next })
   }
 
   const size = 220
@@ -108,26 +150,50 @@ export function SessionPlayer({
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button type="button" variant="ghost" onClick={togglePause} aria-pressed={paused}>
-          {paused ? (
-            <Play weight="fill" className="size-5" aria-hidden />
-          ) : (
-            <Pause weight="fill" className="size-5" aria-hidden />
-          )}
-          <span>{paused ? copy.player.resume : copy.player.pause}</span>
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => {
-            soundEngine.stopAll()
-            onFinish()
-          }}
-        >
-          <Stop weight="fill" className="size-4" aria-hidden />
-          {copy.player.end}
-        </Button>
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="ghost" onClick={togglePause} aria-pressed={paused}>
+            {paused ? (
+              <Play weight="fill" className="size-5" aria-hidden />
+            ) : (
+              <Pause weight="fill" className="size-5" aria-hidden />
+            )}
+            <span>{paused ? copy.player.resume : copy.player.pause}</span>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              soundEngine.stopAll()
+              voicePlayer.stop()
+              onFinish()
+            }}
+          >
+            <Stop weight="fill" className="size-4" aria-hidden />
+            {copy.player.end}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={toggleVoice}
+            aria-pressed={voiceOn}
+            aria-label={copy.player.voiceLabel}
+            title={copy.player.voiceLabel}
+          >
+            {voiceOn ? (
+              <SpeakerHigh
+                weight="fill"
+                className={cn("size-5", voiceStatus === "loading" && "animate-pulse")}
+                aria-hidden
+              />
+            ) : (
+              <SpeakerX weight="fill" className="size-5" aria-hidden />
+            )}
+          </Button>
+        </div>
+        {voiceOn && voiceStatus === "loading" ? (
+          <p className="text-xs text-muted-foreground">{copy.player.voicePreparing}</p>
+        ) : null}
       </div>
     </div>
   )

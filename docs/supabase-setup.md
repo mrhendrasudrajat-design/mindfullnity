@@ -12,9 +12,11 @@ Tersimpan di `.env.local` (sudah di-gitignore, **jangan pernah commit**):
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://gveibbwqlyyzokcrgqqe.supabase.co` | client + server |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `sb_publishable_...` (lihat `.env.local`) | client (publik) |
 | `SUPABASE_SECRET_KEY` | `sb_secret_...` (lihat `.env.local`) | **server-only**, setara service_role — jangan pernah `NEXT_PUBLIC_` |
+| `OPENROUTER_API_KEY` | `sk-or-v1-...` (lihat `.env.local`) | **server-only** — narasi AI (LLM) + TTS suara panduan |
 
-Template: `.env.local.example`. Format key adalah format baru Supabase (`sb_publishable_` / `sb_secret_`),
-bukan `anon`/`service_role` lama.
+Template: `.env.local.example`. Format key Supabase adalah format baru (`sb_publishable_` / `sb_secret_`),
+bukan `anon`/`service_role` lama. Opsional: `OPENROUTER_SCRIPT_MODEL` (model LLM narasi),
+`OPENROUTER_TTS_VOICE` (suara Fish).
 
 ## Arsitektur
 
@@ -24,16 +26,16 @@ bukan `anon`/`service_role` lama.
 - Data: tabel `sessions` & `mood_entries` dengan RLS `user_id = auth.uid()` + `default auth.uid()`
 - Hanya `mind-draft-v1` & `mind-settings` yang tersimpan di localStorage
 
-## Status Checklist (per 2026-08-18) — UPDATE SETELAH SETIAP PERUBAHAN
+## Status Checklist (per 2026-08-26) — UPDATE SETELAH SETIAP PERUBAHAN
 
 | Item | Status |
 | --- | --- |
 | Proyek Supabase dibuat (`gveibbwqlyyzokcrgqqe`) | ✅ Aktif (GoTrue v2.195.0) |
-| `.env.local` + `.env.local.example` | ✅ Dibuat |
+| `.env.local` + `.env.local.example` | ✅ Dibuat (+ `OPENROUTER_API_KEY` server-only untuk narasi AI & TTS) |
 | Provider **Google** aktif | ✅ Aktif (verifikasi 2026-08-18 via `/auth/v1/settings`: `google: true`). Login OAuth sampai halaman Google tanpa error. Client ID & secret terpasang di dashboard |
 | Google OAuth Client ID | `486047985669-5kuebifrp65l76sd8mtap6mlcatildhu.apps.googleusercontent.com` (secret di dashboard, jangan share) |
-| **Migrasi SQL diterapkan** | ✅ Diterapkan via Supabase MCP (2026-08-18, migrasi `20260818113229`). Tabel `sessions` & `mood_entries` + RLS aktif. |
-| Test RLS (`supabase/tests/rls.test.sql`) | ✅ Lolos (2026-08-18, via MCP). Catatan: file diperbaiki — `raise notice` di top-level dibungkus `do $$ ... $$` (valid SQL). Rollback di akhir, tanpa data sisa. |
+| **Migrasi SQL diterapkan** | ✅ `20260818_init.sql` (tabel `sessions` & `mood_entries` + RLS, 2026-08-18) dan `20260826_relational_fix.sql` (2026-08-26: `mood_entries.session_id` FK cascade, unique check-in 1/sesi + manual 1/hari, `updated_at` + trigger `set_updated_at`, `comment on`), via Supabase MCP |
+| Test RLS (`supabase/tests/rls.test.sql`) | ✅ Lolos (2026-08-26, via MCP) — termasuk relasi `session_id`, unique check-in/manual, cascade hapus sesi |
 | Konfirmasi email (mailer_autoconfirm) | ✅ **OFF** (`true` di `/auth/v1/settings`) — signup langsung login, tanpa email konfirmasi |
 | Supabase MCP (opencode) | ✅ Config di `opencode.json` — aktif setelah restart opencode + OAuth |
 | Test user | ✅ `test@mindfulnity.local` terdaftar (2026-08-18, id `3f6ba0ef-6bed-4dcf-8637-0d685aeaed0a`). `ui-test@mindfulnity.local` dibuat saat verifikasi browser (opsional dihapus) |

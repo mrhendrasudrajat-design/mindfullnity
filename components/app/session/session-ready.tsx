@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useLocale } from "@/components/providers/language-context"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,9 @@ import {
   type InstrumentSoundId,
   type NatureSoundId,
 } from "@/lib/sound-catalog"
+import { readSettings } from "@/lib/storage"
 import type { GoalId, GuideId, Session } from "@/lib/templates"
+import { voicePlayer } from "@/lib/voice-player"
 
 export function SessionReady({
   session,
@@ -23,6 +25,12 @@ export function SessionReady({
   const copy = getAppCopy(locale)
   const ready = copy.session.ready
   const [moodBefore, setMoodBefore] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    if (!(readSettings().voice ?? true)) return
+    const texts = session.phases.map((phase) => phase.lines.join(" ")).filter(Boolean)
+    void voicePlayer.prefetchAll(texts)
+  }, [session.phases])
 
   const goal = copy.wizard.steps.goal.goals[session.goal as GoalId]
   const guide = copy.wizard.steps.guide.guides[session.guide as GuideId]

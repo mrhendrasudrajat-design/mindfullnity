@@ -7,9 +7,8 @@ import { FormField } from "@/components/auth/form-field"
 import { MoodPicker } from "@/components/app/mood/mood-picker"
 import { useLocale } from "@/components/providers/language-context"
 import { Button } from "@/components/ui/button"
-import { dateKey } from "@/lib/format"
 import { getAppCopy } from "@/lib/i18n/app"
-import { saveCheckinAction, saveMoodAction } from "@/lib/supabase/actions"
+import { saveCheckinAction } from "@/lib/supabase/actions"
 
 export function CheckinForm({
   sessionId,
@@ -37,14 +36,6 @@ export function CheckinForm({
       reflection: reflection.trim() || undefined,
       integrationAction: integrationAction.trim() || undefined,
     })
-    if (moodAfter) {
-      await saveMoodAction({
-        date: dateKey(new Date()),
-        mood: moodAfter,
-        note: reflection.trim() || undefined,
-        source: "checkin",
-      })
-    }
     router.refresh()
     onDone()
   }

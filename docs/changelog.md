@@ -8,6 +8,44 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ### Ditambahkan
 
+- **Narasi AI per sesi** (via OpenRouter, model gratis):
+  - `lib/ai-script.ts` — prompt builder + call LLM (`z-ai/glm-5.2:free`, fallback routing
+    `nemotron-3-super:free` / `minimax-m2.7:free`) → JSON 7 fase; parse & sanitasi ketat
+    (id valid, urutan PHASE_IDS, batas panjang baris); **fallback otomatis ke template lokal**
+    (`composeSession`) saat API key kosong, timeout, atau respons tidak valid — sesi tidak pernah gagal
+  - `lib/ai-config.ts` — konstanta model, `isAiConfigured()`, override via env
+  - Server action `generateSessionAction` (generate + simpan + revalidate); wizard kini
+    menulis narasi AI saat "Compose sesi saya" dengan indikator "Menyusun narasi AI…"
+  - **Privasi**: LLM hanya menerima pilihan sesi (goal, guide, durasi, bahasa, nickname,
+    anchor) — bukan email/mood/refleksi
+- **Meditasi terpandu bersuara (TTS)** via OpenRouter (`fish-audio/s2.1-pro-free:free`, gratis,
+  83 bahasa termasuk Indonesia, auto-detect):
+  - `lib/tts.ts` — client server ke `/api/v1/audio/speech` (mp3), error mapping, batas teks
+  - `app/api/tts/route.ts` — POST guard `requireUser()` + validasi
+  - `lib/voice-player.ts` — antrian `HTMLAudioElement` (pause/resume/stop, prefetch fase
+    berikutnya, cache per teks, fallback senyap saat gagal)
+  - Toggle "Panduan suara" di pemutar sesi (default on, persist `mind-settings.voice`);
+    suara membacakan **teks yang sama persis** dengan yang ditampilkan (narasi AI = placeholder)
+  - **Pre-warm TTS**: halaman "Sesi siap" me-prefetch audio semua 7 fase (paralel batch 3–4)
+    sebelum sesi dimulai; prefetch semua sisa fase saat playback berjalan; **cache server
+    in-memory LRU** di `/api/tts` (replay instan, hemat kuota) — suara panduan mulai
+    bersamaan BGM; indikator "Menyiapkan suara…" saat audio belum siap
+- **Relasi database `mood_entries ↔ sessions`** (migrasi `20260826_relational_fix.sql`):
+  - Kolom `session_id` FK (cascade) — mood check-in tertelusur ke sesi asalnya
+  - Uniqueness baru: check-in maks 1/sesi (`user_id, session_id`), manual maks 1/hari
+    (partial unique `(user_id, date) where source='manual'`) — **2+ sesi/hari tidak lagi
+    saling menimpa mood check-in** (perbaikan bug `unique(user_id,date)` lama)
+  - `updated_at` + trigger `set_updated_at()` di kedua tabel; `comment on` semantik kolom
+  - Check-in kini 1 server action (`saveCheckinAction` menulis sesi + mood sekaligus)
+- **Perbaikan engine suara ambien** (`lib/sound-engine.ts`): stop keras (disconnect semua
+  node + try/catch), `musicBox` reset step & melacak osilator aktif, context ditutup saat
+  idle; **pengaman global** di `AppShell` (`usePathname` → stop semua suara/voice tiap
+  navigasi) — BGM tidak lagi bocor ke dashboard
+- Unit test baru: `tests/lib/{ai-script,tts,voice-player}.test.ts` (mock fetch/Audio);
+  update `tests/lib/supabase/moods.test.ts` (semantik unique baru); test RLS diperluas
+  (relasi session_id, unique check-in/manual, cascade) — 167 test, semua passing
+- Env baru di `.env.local.example`: `OPENROUTER_API_KEY` (server-only),
+  opsional `OPENROUTER_SCRIPT_MODEL`, `OPENROUTER_TTS_VOICE`
 - Landing page **Mindfulnity** di `/`:
   - Navbar sticky (logo, tautan #fitur & #cara-kerja, toggle bahasa, CTA "Mulai")
   - Hero split-screen dengan visual lingkaran pernapasan beranimasi + badge privasi
@@ -63,7 +101,6 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 ### Roadmap (setelah MVP)
 
 - Program berjenjang 7/21/90 hari dengan progres per hari (seperti Wavr)
-- Meditasi terpandu bersuara / voice production
 - Notifikasi / reminder harian
 - PWA / offline
 - Monetisasi (premium)

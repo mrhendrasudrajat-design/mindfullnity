@@ -41,6 +41,9 @@ tests/
     player.test.ts      # Test logika timer sesi (fase aktif, progres)
     wizard.test.ts      # Test state machine + validasi langkah wizard
     sound-catalog.test.ts  # Test metadata katalog suara
+    ai-script.test.ts      # Test narasi AI (mock fetch) + fallback template
+    tts.test.ts            # Test client TTS (mock fetch, error mapping)
+    voice-player.test.ts   # Test antrian audio panduan (mock Audio)
     supabase/
       auth-errors.test.ts   # Test pemetaan error auth → pesan ID/EN
       sessions.test.ts      # Test repository sessions (mock supabase)

@@ -10,7 +10,15 @@ vi.mock("@/lib/supabase/server", () => ({
 
 import { listMoods, upsertMood } from "@/lib/supabase/moods"
 
-function buildClient({ rows, error }: { rows?: unknown[]; error?: { message: string } }) {
+function buildClient({
+  rows,
+  error,
+  existing,
+}: {
+  rows?: unknown[]
+  error?: { message: string }
+  existing?: { id: string } | null
+}) {
   const payload = error
     ? { data: null, error }
     : { data: rows, error: null }
@@ -21,6 +29,9 @@ function buildClient({ rows, error }: { rows?: unknown[]; error?: { message: str
   chain.order = vi.fn(() => chain)
   chain.insert = vi.fn(() => chain)
   chain.upsert = vi.fn(() => chain)
+  chain.update = vi.fn(() => chain)
+  chain.eq = vi.fn(() => chain)
+  chain.maybeSingle = vi.fn(async () => ({ data: existing ?? null, error: null }))
   chain.single = vi.fn(async () => ({ data: row, error: error ?? null }))
   chain.then = (onFulfilled: (value: unknown) => unknown) =>
     Promise.resolve(payload).then(onFulfilled)
@@ -71,39 +82,77 @@ describe("listMoods", () => {
 })
 
 describe("upsertMood", () => {
-  it("upserts on the (user_id, date) conflict", async () => {
+  it("upserts check-in entries on the (user_id, session_id) conflict", async () => {
     const { chain } = buildClient({ rows: [ROW] })
     const entry = await upsertMood({
       date: "2026-08-18",
-      mood: 5,
-      note: "hebat",
+      mood: 4,
       source: "checkin",
+      sessionId: "11111111-1111-1111-1111-111111111111",
     })
 
     expect(chain.upsert).toHaveBeenCalledWith(
       {
         date: "2026-08-18",
-        mood: 5,
-        note: "hebat",
+        mood: 4,
+        note: null,
         source: "checkin",
+        session_id: "11111111-1111-1111-1111-111111111111",
       },
-      { onConflict: "user_id,date" },
+      { onConflict: "user_id,session_id" },
     )
     expect(chain.single).toHaveBeenCalled()
     expect(entry.mood).toBe(4)
   })
 
-  it("defaults source to manual and note to null", async () => {
-    buildClient({ rows: [ROW] })
+  it("inserts a manual entry when none exists for the day", async () => {
+    const { from, chain } = buildClient({ rows: [ROW], existing: null })
+    await upsertMood({ date: "2026-08-18", mood: 3, note: "tenang" })
+
+    expect(chain.maybeSingle).toHaveBeenCalled()
+    expect(chain.insert).toHaveBeenCalledWith({
+      date: "2026-08-18",
+      mood: 3,
+      note: "tenang",
+      source: "manual",
+      session_id: null,
+    })
+    expect(chain.upsert).not.toHaveBeenCalled()
+    expect(from).toHaveBeenCalledWith("mood_entries")
+  })
+
+  it("updates the existing manual entry for the day", async () => {
+    const { chain } = buildClient({
+      rows: [ROW],
+      existing: { id: "99999999-9999-9999-9999-999999999999" },
+    })
+    await upsertMood({ date: "2026-08-18", mood: 2 })
+
+    expect(chain.update).toHaveBeenCalledWith({
+      date: "2026-08-18",
+      mood: 2,
+      note: null,
+      source: "manual",
+      session_id: null,
+    })
+    expect(chain.eq).toHaveBeenCalledWith("id", "99999999-9999-9999-9999-999999999999")
+    expect(chain.insert).not.toHaveBeenCalled()
+  })
+
+  it("defaults source to manual", async () => {
+    buildClient({ rows: [ROW], existing: null })
     await upsertMood({ date: "2026-08-18", mood: 3 })
 
     const { from } = state.client as { from: ReturnType<typeof vi.fn> }
     const chain = from.mock.results[0].value as {
-      upsert: ReturnType<typeof vi.fn>
+      insert: ReturnType<typeof vi.fn>
     }
-    expect(chain.upsert).toHaveBeenCalledWith(
-      { date: "2026-08-18", mood: 3, note: null, source: "manual" },
-      { onConflict: "user_id,date" },
-    )
+    expect(chain.insert).toHaveBeenCalledWith({
+      date: "2026-08-18",
+      mood: 3,
+      note: null,
+      source: "manual",
+      session_id: null,
+    })
   })
 })

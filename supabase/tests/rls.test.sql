@@ -87,6 +87,75 @@ begin
 end $$;
 do $$ begin raise notice 'OK: user A tidak bisa menulis atas nama user B'; end $$;
 
+-- Relasi: mood check-in bisa dihubungkan ke sesi milik user A
+do $$
+declare
+  mood_id uuid;
+begin
+  insert into public.mood_entries (user_id, date, mood, source, session_id)
+  values ('00000000-0000-0000-0000-000000000001', current_date, 3, 'checkin',
+          '11111111-1111-1111-1111-111111111111')
+  returning id into mood_id;
+  delete from public.mood_entries where id = mood_id;
+end $$;
+do $$ begin raise notice 'OK: mood check-in tertaut session_id milik sendiri'; end $$;
+
+-- Check-in kedua sesi yang sama di hari sama DITOLAK (unique user_id, session_id)
+do $$
+begin
+  insert into public.mood_entries (user_id, date, mood, source, session_id)
+  values ('00000000-0000-0000-0000-000000000001', current_date, 3, 'checkin',
+          '11111111-1111-1111-1111-111111111111');
+  begin
+    insert into public.mood_entries (user_id, date, mood, source, session_id)
+    values ('00000000-0000-0000-0000-000000000001', current_date, 5, 'checkin',
+            '11111111-1111-1111-1111-111111111111');
+    raise exception 'GAGAL: check-in duplikat per sesi harus ditolak';
+  exception
+    when unique_violation then
+      null; -- sesuai harapan
+  end;
+end $$;
+do $$ begin raise notice 'OK: 1 check-in per sesi'; end $$;
+
+-- Entri manual kedua di hari sama DITOLAK (unique user_id, date, source)
+do $$
+begin
+  begin
+    insert into public.mood_entries (user_id, date, mood, source)
+    values ('00000000-0000-0000-0000-000000000001', current_date, 2, 'manual');
+    raise exception 'GAGAL: mood manual duplikat per hari harus ditolak';
+  exception
+    when unique_violation then
+      null; -- sesuai harapan
+  end;
+end $$;
+do $$ begin raise notice 'OK: 1 mood manual per hari'; end $$;
+
+-- Menghapus sesi ikut menghapus mood check-in-nya (cascade)
+do $$
+declare
+  s_id uuid;
+  m_id uuid;
+begin
+  insert into public.sessions (user_id, title, goal, guide, sound_mix, duration_min, phases)
+  values ('00000000-0000-0000-0000-000000000001', 'Sesi cascade', 'relax', 'parent',
+          '{"nature": [], "instruments": []}', 5,
+          '[{"id":"arrive","title":"Kedatangan","lines":["x"]}]')
+  returning id into s_id;
+
+  insert into public.mood_entries (user_id, date, mood, source, session_id)
+  values ('00000000-0000-0000-0000-000000000001', current_date, 4, 'checkin', s_id)
+  returning id into m_id;
+
+  delete from public.sessions where id = s_id;
+
+  if exists (select 1 from public.mood_entries where id = m_id) then
+    raise exception 'GAGAL: mood check-in harus ikut terhapus saat sesi dihapus';
+  end if;
+end $$;
+do $$ begin raise notice 'OK: hapus sesi meng-cascade mood check-in'; end $$;
+
 reset role;
 rollback;
 

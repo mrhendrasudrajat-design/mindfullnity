@@ -86,7 +86,9 @@ animasi 5 tahap: "Membaca tujuanmu…", "Menyusun 7 fase…", dsb.)
 | 04 Panduan baca | Teks 7 fase (template ID/EN sesuai tujuan), berganti sesuai progres, bisa disalin |
 
 **Pengalaman meditasi**: timer countdown dengan cincin bernapas, suara ambien dimainkan,
-teks fase ditampilkan secara bergantian sesuai porsi waktu.
+teks fase ditampilkan secara bergantian sesuai porsi waktu. Narasi **dibacakan suara
+panduan** (TTS) — teks tampil = narasi AI = yang dibacakan; toggle speaker untuk
+mematikan (tersimpan di `mind-settings.voice`).
 
 ### 5. Check-in (Setelah Sesi)
 
@@ -121,14 +123,14 @@ Dokumen detail: [architecture.md](./architecture.md).
 | Tabel | Isi |
 | --- | --- |
 | `sessions` | Sesi lengkap (tujuan, guide, campuran suara, skrip 7 fase, mood, refleksi, aksi integrasi) |
-| `mood_entries` | Entri mood harian (sumber: `manual` / `checkin`) |
+| `mood_entries` | Entri mood harian (sumber: `manual` 1/hari / `checkin` 1/sesi, tertaut `session_id`) |
 
 **localStorage (bukan data pengguna):**
 
 | Key | Struktur | Deskripsi |
 | --- | --- | --- |
 | `mind-draft-v1` | Objek draft wizard | Resume pembuatan sesi |
-| `mind-settings` | `{ language, volume }` | Preferensi pengguna |
+| `mind-settings` | `{ language, volume, voice }` | Preferensi pengguna |
 
 ## Perbedaan dari Wavr
 
@@ -136,9 +138,17 @@ Dokumen detail: [architecture.md](./architecture.md).
 | --- | --- | --- |
 | Halaman | SPA 1 halaman | Landing + halaman aplikasi terpisah |
 | Masuk pertama | Wizard langsung | Login dulu → dashboard-first, wizard saat "Sesi Baru" |
-| Pembuatan sesi | AI + API | Compose dari template lokal (ID/EN), simpan ke Supabase |
+| Pembuatan sesi | AI + API | Narasi 7 fase ditulis AI (OpenRouter, gratis) + fallback template lokal |
 | Auth | Supabase (email/password) | Supabase: email/password + Google |
 | Pembayaran | Stripe/Apple/Google | Tidak ada di MVP |
-| Suara panduan (voice) | ElevenLabs/OpenAI | Tidak ada; audio = suara ambien |
+| Suara panduan (voice) | ElevenLabs/OpenAI | TTS gratis via OpenRouter (Fish Audio) |
 | Program | 7/21/90 hari | Roadmap (tidak di MVP) |
 | Check-in | Sebelum/sesudah + refleksi | Dipertahankan |
+
+## Privasi & AI
+
+- LLM (penulis narasi) dan TTS hanya menerima **pilihan sesi**: tujuan, guide, durasi,
+  bahasa, nickname, dan anchor (kata kunci / tempat aman / gratitude).
+- **Tidak pernah** dikirim: email, mood, refleksi, aksi integrasi, atau data akun lain.
+- Jika layanan AI tidak tersedia (tanpa API key, rate limit, jaringan), sesi tetap berjalan:
+  narasi memakai template lokal dan suara panduan hanya diam.

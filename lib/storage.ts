@@ -10,6 +10,7 @@ export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
 export type Settings = {
   language?: "id" | "en"
   volume?: number
+  voice?: boolean
 }
 
 type CacheEntry = {
