@@ -67,15 +67,19 @@ tests/
   (`lib/` → `tests/lib/`, `components/landing/` → `tests/components/landing/`).
 - **Bahasa**: struktur test (describe/it) menggunakan Bahasa Indonesia agar konsisten dengan kode produk.
 - **Impor eksplisit**: `import { describe, expect, it } from "vitest"` (tidak memakai globals).
-- **Provider**: komponen landing yang memakai bahasa wajib dibungkus `LanguageProvider` di dalam test.
+- **Provider**: komponen landing/program yang memakai bahasa wajib dibungkus `LanguageProvider` di dalam test.
 - **Interaksi**: gunakan `userEvent` (bukan `fireEvent`) untuk mensimulasikan klik/toggle.
+- **Paywall/program**: `ProgramPrice`/`CatalogHeader` + `DokuLogo` + `hasEntitlement` perlu mock `next/headers` & `supabase` (`@supabase/ssr`) seperti `supabase/sessions.test.ts`.
 
 ## Cakupan
 
-Target cakupan saat ini (dijalankan via `npm run test:coverage`):
+Target cakupan **dalam scope yang di-include** (`components/**`, `lib/**` via `vitest.config.ts:18`):
 
-- Statements ~96%, Branch ~90%, Lines ~99%.
-- Pengecualian coverage: `lib/utils.ts`, `components/ui/**` (generated shadcn), `components/landing/reveal.tsx` (logika observer sulit diuji; sudah diuji fungsional).
+- Statements ~96%, Branch ~90%, Lines ~99% — **hanya untuk file yang di-include**.
+- **Overall repo** (`npm run test:coverage` tanpa filter) saat ini **Statements 46.9% / Branch 47.3% / Lines 47.6%** (`vitest@4.1.10` `coverage-v8`, 1275 lines) — karena banyak file paywall/program belum ter-cover.
+- Pengecualian coverage: `lib/utils.ts`, `components/ui/**` (generated shadcn), `components/landing/reveal.tsx`.
+- **Gap yang belum ter-cover (P1):** `lib/pricing.ts` (FX `priceFor`/`dokuAmountFor`), `lib/programs.ts` (`isDayUnlocked`/`toProgram`), `lib/payments/doku.ts` (HMAC `verifyDokuSignature` + mock grant), `lib/payments/entitlement.ts`, `lib/supabase/actions.ts` (`createCheckoutAction`/`completeProgramDayAction`), `proxy.ts` gate, `app/api/{tts,doku}` handlers, `lib/sound-engine.ts` (AudioContext), `components/app/program/**` paywall/program UI — akan ditambah di iterasi berikutnya.
+- Catatan: `vitest@4.1.10` ada bug parse `lib/payments/*.ts` (`Expected 'from'`) → `4.1.11` memperbaikinya.
 
 ## Lingkup yang Diuji
 

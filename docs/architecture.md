@@ -36,9 +36,17 @@ app/
       [id]/page.tsx   # Halaman sesi + pemutar + check-in (/app/session/:id)
     sounds/page.tsx   # Katalog suara relaksasi (/app/sounds)
     mood/page.tsx     # Mood tracker (/app/mood)
-proxy.ts              # (pengganti middleware Next 16) gate /app + refresh token
+    program/
+      page.tsx        # Katalog 7/21/90 (`/app/program`)
+      [slug]/page.tsx # Detail program + grid hari (`/app/program/:slug`)
+      [slug]/checkout/page.tsx # Checkout DOKU (`/app/program/:slug/checkout`)
+      [slug]/day/[n]/page.tsx # Hari ke-N (`/app/program/:slug/day/:n`)
+  api/
+    tts/route.ts      # TTS (protected)
+    doku/webhook/route.ts # Webhook DOKU (publik, verify signature)
+proxy.ts              # (pengganti middleware Next 16) gate /app + refresh token (bypass /api/doku)
 supabase/
-  migrations/         # SQL: tabel sessions, mood_entries, RLS
+  migrations/         # SQL: sessions, mood_entries, programs, program_days, enrollments, progress, payments, entitlements
 components/
   ui/                 # Komponen shadcn/ui
   providers/
@@ -107,6 +115,11 @@ tests/
 | `/app/sounds` | Suara relaksasi |
 | `/app/mood` | Mood tracker |
 | `/api/tts` | POST (protected): sintesis suara panduan via OpenRouter |
+| `/app/program` | Katalog program 7/21/90 (paywall DOKU) |
+| `/app/program/:slug` | Detail program + progress harian (unlock bertahap) |
+| `/app/program/:slug/checkout` | Checkout DOKU Checkout (mock jika tanpa key) |
+| `/app/program/:slug/day/:n` | Hari ke-N — 1 sesi 7 fase, terhubung `program_progress.session_id → sessions.id` |
+| `/api/doku/webhook` | POST (publik): notifikasi DOKU, verify HMAC-SHA256, idempotent `doku_invoice_id` |
 
 ## Landing Page (Sudah Diimplementasikan)
 
@@ -121,6 +134,12 @@ Landing page di `/` dibangun dengan brand **Mindfulnity** (adaptasi prinsip tena
 - **Aset visual**: foto placeholder dari `picsum.photos` (diizinkan via `next.config.ts`
   `images.remotePatterns`); kartu mood memakai bar chart recharts (7 hari).
 - **CTA**: "Mulai" menuju `/app` (diarahkan ke `/auth/login` bila belum login via `proxy.ts`).
+
+## Dokumentasi Terkait
+
+- [Setup developer & troubleshooting](./development.md) — clone → setup → dev
+- [Deploy ke Vercel](./deployment.md) — env prod, checklist Supabase & Google OAuth
+- [Supabase setup](./supabase-setup.md) — sumber kebenaran kredensial & migrasi
 
 ## Pengujian
 
@@ -138,8 +157,9 @@ Setup unit testing (Vitest + Testing Library) didokumentasikan di
   titik penjaga untuk seluruh halaman protected.
 - **RLS (Row Level Security)**: tabel `sessions` & `mood_entries` hanya bisa dibaca/ditulis
   oleh pemiliknya (`user_id = auth.uid()`), diperkuat `default auth.uid()` saat insert.
-- Kredensial: `.env.local` (URL + publishable key client; `SUPABASE_SECRET_KEY` server-only;
-  `OPENROUTER_API_KEY` server-only untuk narasi AI & TTS — lihat `.env.local.example`).
+- Kredensial: `.env.local` (URL + publishable key client; `OPENROUTER_API_KEY` server-only
+  untuk narasi AI & TTS; `DOKU_CLIENT_ID/SECRET_KEY/API_URL` server-only untuk checkout;
+  `FX_IDR_PER_USD` untuk EN/USD display; `SUPABASE_SECRET_KEY` **dipakai** `lib/supabase/admin.ts` untuk webhook DOKU — lihat `.env.local.example`).
 
 ## State & Persistensi
 
@@ -151,10 +171,13 @@ via `lib/storage.ts` (SSR-safe, cache snapshot, sinkron antar-tab):
 | `mind-draft-v1` | Objek draft wizard | Resume pembuatan sesi |
 | `mind-settings` | `{ language, volume, voice }` | Preferensi pengguna (suara panduan on/off) |
 
-Skema tabel `sessions` dan `mood_entries` serta policy RLS ada di
-`supabase/migrations/20260818_init.sql` (+ `20260826_relational_fix.sql` untuk relasi
-`mood_entries.session_id → sessions.id` (cascade), uniqueness check-in 1/sesi & manual 1/hari,
-`updated_at` + trigger, dan `comment on`).
+Skema `sessions`/`mood_entries` ada di `supabase/migrations/20260818_init.sql` (+ `20260826_relational_fix.sql`).
+Skema paywall & program ada di `supabase/migrations/20260929_billing_programs.sql`:
+`programs` (7/21/90, `price_idr` 19k/49k/99k) 1--N `program_days` (118 rows, `goal` + `phases` JSONB),
+`program_enrollments` (user→program, `current_day` unlock, `unique where status='active'`),
+`program_progress` (`enrollment_id` FK + `session_id` FK `sessions.id` SET NULL — **relasi program→session**),
+`payments` (DOKU `doku_invoice_id` unique, `amount` IDR + `display_*` lokal), `entitlements` (user→program, `payment_id` FK).
+Semua RLS `user_id=auth.uid()` (katalog `programs`/`program_days` `authenticated` read), webhook via `lib/supabase/admin.ts` service_role.
 
 Skema `Session` (adaptasi model sesi Wavr):
 
@@ -220,6 +243,14 @@ Derived data: total menit, jumlah sesi, dan konsistensi dihitung dari `mind-sess
   saat API key kosong, timeout, respons tidak valid — sesi tidak pernah gagal,
   prinsip anti-tekanan
 - Hanya data pilihan sesi yang dikirim ke LLM/TTS; data akun & check-in tidak pernah
+
+## Paywall & Program 7/21/90
+
+- **Katalog & harga:** `lib/programs.ts` + `supabase/migrations/20260929_billing_programs.sql` seed 7/21/90 (`price_idr` 19k/49k/99k); `lib/pricing.ts` `priceFor(locale, priceIdr)` — `ID→IDR` `formatIDR`, `EN→USD` `formatUSD` via `FX_IDR_PER_USD=16500` (A), `dokuAmountFor()` selalu IDR untuk settlement DOKU.
+- **Checkout:** `lib/payments/doku.ts` (`isDokuConfigured`, `createDokuCheckout` HMAC-SHA256 `ClientId+RequestId+Timestamp+payload`, mock grant jika tanpa key), `lib/supabase/actions.ts` `createCheckoutAction` + `completeProgramDayAction` (upsert `program_progress` + advance `current_day`), `lib/supabase/admin.ts` service_role untuk grant.
+- **Webhook:** `app/api/doku/webhook/route.ts` publik (bypass `proxy.ts`), verify `X-DOKU-Signature` timing-safe, idempotent `doku_invoice_id`, upsert `entitlements` + `program_enrollments`.
+- **Entitlement:** `lib/payments/entitlement.ts` `hasEntitlement` RLS user-only; paywall di `app/app/program/[slug]/page.tsx` (redirect `checkout` jika belum), unlock `isDayUnlocked` `day <= currentDay`.
+- **Relasi DB terhubung:** `programs`──<`program_days`/`payments`/`entitlements`, `program_enrollments`──<`program_progress`──>`sessions` (`session_id` SET NULL), `entitlements.payment_id→payments.id` — cascade/restrict menjaga integritas (hapus user cascade, hapus program restrict jika ada enrollment/payment).
 
 ## Pola
 

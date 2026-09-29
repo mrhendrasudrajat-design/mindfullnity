@@ -1,6 +1,6 @@
 "use client"
 
-import { House, ChartLineUp, NotePencil, Waveform } from "@phosphor-icons/react"
+import { House, ChartLineUp, NotePencil, Waveform, CalendarCheck } from "@phosphor-icons/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -10,12 +10,14 @@ import { getAppCopy } from "@/lib/i18n/app"
 
 const ITEMS = [
   { href: "/app", key: "dashboard" },
+  { href: "/app/program", key: "program" },
   { href: "/app/sounds", key: "sounds" },
   { href: "/app/mood", key: "mood" },
 ] as const
 
 const ICONS = {
   dashboard: House,
+  program: CalendarCheck,
   sounds: Waveform,
   mood: ChartLineUp,
 } as const
@@ -30,7 +32,7 @@ export function BottomNav() {
       aria-label="Navigasi utama"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/90 backdrop-blur md:hidden"
     >
-      <div className="mx-auto grid max-w-md grid-cols-4 items-stretch gap-1 px-2 py-1.5">
+      <div className="mx-auto grid max-w-md grid-cols-5 items-stretch gap-1 px-2 py-1.5">
         <Link
           href="/app/session/new"
           className={cn(

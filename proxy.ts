@@ -32,11 +32,18 @@ export async function proxy(request: NextRequest) {
     },
   )
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  let session: { user: { id: string } } | null = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    session = data.user ? { user: { id: data.user.id } } : null
+  } catch {
+    session = null
+  }
 
   const path = request.nextUrl.pathname
+  // DOKU webhook harus publik tanpa cek auth (verify signature di route)
+  if (path.startsWith("/api/doku/")) return response
+
   const isProtected =
     path === PROTECTED_PREFIX || path.startsWith(`${PROTECTED_PREFIX}/`)
   const isAuthPage =

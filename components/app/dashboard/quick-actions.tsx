@@ -1,6 +1,6 @@
 "use client"
 
-import { ChartLineUp, NotePencil, Waveform } from "@phosphor-icons/react"
+import { ChartLineUp, NotePencil, Waveform, CalendarCheck } from "@phosphor-icons/react"
 import Link from "next/link"
 
 import { useLocale } from "@/components/providers/language-context"
@@ -29,6 +29,12 @@ export function QuickActions() {
       href: "/app/mood",
       label: copy.mood,
       Icon: ChartLineUp,
+      variant: "outline" as const,
+    },
+    {
+      href: "/app/program",
+      label: (copy as unknown as { program?: string }).program ?? "Program",
+      Icon: CalendarCheck,
       variant: "outline" as const,
     },
   ]
