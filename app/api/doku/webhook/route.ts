@@ -6,11 +6,18 @@ export async function POST(request: Request) {
   const timestamp = request.headers.get("Request-Timestamp") ?? request.headers.get("request-timestamp") ?? ""
   const signature = request.headers.get("Signature") ?? request.headers.get("signature") ?? ""
 
-  // Verify signature jika DOKU terkonfigurasi; jika mock skip verify tapi tetap idempotent
-  if (process.env.DOKU_SECRET_KEY && process.env.DOKU_CLIENT_ID) {
+  // Verify signature jika DOKU terkonfigurasi; wajib ada Signature + replay window 5 menit
+  const isDokuConfigured = !!process.env.DOKU_SECRET_KEY && !!process.env.DOKU_CLIENT_ID
+  if (isDokuConfigured) {
+    if (!signature || !requestId || !timestamp) {
+      return Response.json({ error: "missing signature" }, { status: 401 })
+    }
+    const ts = Date.parse(timestamp)
+    if (Number.isNaN(ts) || Math.abs(Date.now() - ts) > 5 * 60 * 1000) {
+      return Response.json({ error: "invalid timestamp" }, { status: 401 })
+    }
     const { verifyDokuSignature } = await import("@/lib/payments/doku")
-    const sigOk = verifyDokuSignature(raw, requestId, timestamp, signature)
-    if (!sigOk && signature) {
+    if (!verifyDokuSignature(raw, requestId, timestamp, signature)) {
       return Response.json({ error: "invalid signature" }, { status: 401 })
     }
   }
